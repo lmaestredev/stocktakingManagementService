@@ -1,4 +1,4 @@
-package com.stockapp.stocktakingmanagementservice.models;
+package com.stockapp.stocktakingmanagementservice.core.models;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;

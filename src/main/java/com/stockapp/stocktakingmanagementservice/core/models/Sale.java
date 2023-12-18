@@ -1,4 +1,4 @@
-package com.stockapp.stocktakingmanagementservice.models;
+package com.stockapp.stocktakingmanagementservice.core.models;
 
 import com.stockapp.stocktakingmanagementservice.utils.enums.SaleType;
 import org.springframework.data.annotation.Id;

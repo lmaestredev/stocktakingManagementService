@@ -3,18 +3,18 @@ package com.stockapp.stocktakingmanagementservice.core.models;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document("Customers")
+@Document(collection = "Customers")
 public class Customer {
 
     @Id
     private String id;
-    private String nombre;
+    private String name;
 
     public Customer() {
     }
 
-    public Customer(String nombre) {
-        this.nombre = nombre;
+    public Customer(String name) {
+        this.name = name;
     }
 
     public String getId() {
@@ -25,11 +25,11 @@ public class Customer {
         this.id = id;
     }
 
-    public String getNombre() {
-        return nombre;
+    public String getName() {
+        return name;
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
+    public void setName(String name) {
+        this.name = name;
     }
 }

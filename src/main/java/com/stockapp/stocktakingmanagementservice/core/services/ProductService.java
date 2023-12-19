@@ -33,7 +33,9 @@ public class ProductService implements CreateProductUseCase, GetAllProductsUseCa
                     if (exists) {
                         return Mono.error(new RuntimeException("El producto ya existe en la base de datos."));
                     } else {
-                        if (product.getName().isEmpty() || product.getName() == null) {
+                        if (product.getName() == null) {
+                            return Mono.error(new RuntimeException("Nombre no puede estar vacio o ser nulo"));
+                        } else if (product.getName().isEmpty()) {
                             return Mono.error(new RuntimeException("Nombre no puede estar vacio o ser nulo"));
                         } else {
                             return productRepository.save(product)
@@ -46,11 +48,21 @@ public class ProductService implements CreateProductUseCase, GetAllProductsUseCa
 
     @Override
     public Flux<ProductDtoRes> getAll() {
-        return productRepository.findAll().map(productMapper::entityToDtoRes);
+        return productRepository.findAll()
+                .collectList()
+                .flatMapMany(products -> {
+                    if (products.isEmpty()) {
+                        return Mono.error(new RuntimeException("La lista está vacia"));
+                    } else {
+                        return Flux.fromIterable(products).map(productMapper::entityToDtoRes);
+                    }
+                });
     }
 
     @Override
     public Mono<ProductDtoRes> getById(String id) {
-        return productRepository.findById(id).map(productMapper::entityToDtoRes);
+        return productRepository.findById(id)
+                .flatMap(product -> Mono.just(productMapper.entityToDtoRes(product)))
+                .switchIfEmpty(Mono.error(new RuntimeException("El producto no existe")));
     }
 }

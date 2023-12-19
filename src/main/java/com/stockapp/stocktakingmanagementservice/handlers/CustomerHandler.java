@@ -19,12 +19,14 @@ public class CustomerHandler {
     private final CreateCustomerUseCase createCustomerUseCase;
     private final GetAllCustomersUseCase getAllCustomersUseCase;
     private final GetCustomerByIdUseCase getCustomerByIdUseCase;
+    private final ErrorHandler errorHandler;
 
     @Autowired
-    public CustomerHandler(CreateCustomerUseCase createCustomerUseCase, GetAllCustomersUseCase getAllCustomersUseCase, GetCustomerByIdUseCase getCustomerByIdUseCase) {
+    public CustomerHandler(CreateCustomerUseCase createCustomerUseCase, GetAllCustomersUseCase getAllCustomersUseCase, GetCustomerByIdUseCase getCustomerByIdUseCase, ErrorHandler errorHandler) {
         this.createCustomerUseCase = createCustomerUseCase;
         this.getAllCustomersUseCase = getAllCustomersUseCase;
         this.getCustomerByIdUseCase = getCustomerByIdUseCase;
+        this.errorHandler = errorHandler;
     }
 
     public Mono<ServerResponse> create(ServerRequest request) {
@@ -43,14 +45,15 @@ public class CustomerHandler {
     }
 
     public Mono<ServerResponse> getById(ServerRequest request) {
-        String customerId = request.pathVariable("customerId");
+        Mono<String> customerIdMono = Mono.just(request.pathVariable("customerId"));
 
-        return getCustomerByIdUseCase.getById(customerId).flatMap(created -> {
-            return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
-                    .bodyValue(created)
-                    .switchIfEmpty(ServerResponse.notFound().build());
+        return customerIdMono.flatMap(customerId -> {
+            return getCustomerByIdUseCase.getById(customerId)
+                    .flatMap(customer -> {
+                        return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).bodyValue(customer);
+                    })
+                    .onErrorResume(error -> errorHandler.handleServiceError(error, customerId));
         });
-
     }
 
 }

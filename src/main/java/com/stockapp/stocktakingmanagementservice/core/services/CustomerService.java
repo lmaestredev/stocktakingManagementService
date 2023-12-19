@@ -28,17 +28,41 @@ public class CustomerService implements CreateCustomerUseCase, GetAllCustomersUs
     @Override
     public Mono<CustomerDtoRes> create(CustomerDtoReq customerDtoReq) {
         Customer customer = customerMapper.dtoToEntity(customerDtoReq);
-        return customerRepository.save(customer).map(customerMapper::entityToDtoRes);
+        return customerRepository.existsByName(customer.getName())
+                .flatMap(exists -> {
+                    if (exists) {
+                        return Mono.error(new RuntimeException("El customer ya existe en la base de datos."));
+                    } else {
+                        if (customer.getName() == null) {
+                            return Mono.error(new RuntimeException("Nombre no puede estar vacio o ser nulo"));
+                        } else if (customer.getName().isEmpty()) {
+                            return Mono.error(new RuntimeException("Nombre no puede estar vacio o ser nulo"));
+                        } else {
+                            return customerRepository.save(customer)
+                                    .map(customerMapper::entityToDtoRes);
+                        }
+                    }
+                });
     }
 
     @Override
     public Flux<CustomerDtoRes> getAll() {
-        return customerRepository.findAll().map(customerMapper::entityToDtoRes);
+        return customerRepository.findAll()
+                .collectList()
+                .flatMapMany(customers -> {
+                    if (customers.isEmpty()) {
+                        return Mono.error(new RuntimeException("La lista está vacia"));
+                    } else {
+                        return Flux.fromIterable(customers).map(customerMapper::entityToDtoRes);
+                    }
+                });
     }
 
     @Override
     public Mono<CustomerDtoRes> getById(String id) {
-        return customerRepository.findById(id).map(customerMapper::entityToDtoRes);
+        return customerRepository.findById(id)
+                .flatMap(customer -> Mono.just(customerMapper.entityToDtoRes(customer)))
+                .switchIfEmpty(Mono.error(new RuntimeException("El cliente no existe")));
     }
-    
+
 }

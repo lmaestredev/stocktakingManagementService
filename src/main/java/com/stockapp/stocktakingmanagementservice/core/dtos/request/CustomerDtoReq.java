@@ -1,8 +1,5 @@
 package com.stockapp.stocktakingmanagementservice.core.dtos.request;
 
-import lombok.Data;
-
-@Data
 public class CustomerDtoReq {
 
     private String name;

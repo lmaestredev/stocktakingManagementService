@@ -25,7 +25,9 @@ public class RouterFunctionConfig {
         return RouterFunctions
                 .route(POST("/products/create"), productHandler::create)
                 .andRoute(GET("/products/getAll"), productHandler::getAll)
-                .andRoute(GET("/products/getById/{productId}"), productHandler::getById);
+                .andRoute(GET("/products/getById/{productId}"), productHandler::getById)
+                .andRoute(GET("/products/getPaginated"), productHandler::getPaginated)
+                .andRoute(POST("/products/createLots"), productHandler::createLots);
 
     }
 

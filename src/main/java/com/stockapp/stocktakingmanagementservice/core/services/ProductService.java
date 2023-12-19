@@ -33,8 +33,13 @@ public class ProductService implements CreateProductUseCase, GetAllProductsUseCa
                     if (exists) {
                         return Mono.error(new RuntimeException("El producto ya existe en la base de datos."));
                     } else {
-                        return productRepository.save(product)
-                                .map(productMapper::entityToDtoRes);
+                        if (product.getName().isEmpty() || product.getName() == null) {
+                            return Mono.error(new RuntimeException("Nombre no puede estar vacio o ser nulo"));
+                        } else {
+                            return productRepository.save(product)
+                                    .map(productMapper::entityToDtoRes);
+
+                        }
                     }
                 });
     }

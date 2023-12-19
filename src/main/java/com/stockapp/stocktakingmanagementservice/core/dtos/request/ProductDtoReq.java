@@ -1,10 +1,12 @@
 package com.stockapp.stocktakingmanagementservice.core.dtos.request;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 import java.math.BigDecimal;
 
 public class ProductDtoReq {
 
-    //    @NotNull(message = "El campo 'precio' no puede ser nulo")
     private String name;
     private Number stockQuantity;
     private BigDecimal cost;

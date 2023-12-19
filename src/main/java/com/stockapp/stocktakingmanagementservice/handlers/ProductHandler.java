@@ -29,8 +29,9 @@ public class ProductHandler {
     }
 
     public Mono<ServerResponse> create(ServerRequest request) {
-        Mono<ProductDtoReq> productDtoMono = request.bodyToMono(ProductDtoReq.class);
-        return productDtoMono.flatMap(productDto -> {
+//        Mono<ProductDtoReq> productDtoMono = request.bodyToMono(ProductDtoReq.class);
+
+        return request.bodyToMono(ProductDtoReq.class).flatMap(productDto -> {
             return createProductUseCase.create(productDto)
                     .flatMap(created -> {
                         return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).bodyValue(created);

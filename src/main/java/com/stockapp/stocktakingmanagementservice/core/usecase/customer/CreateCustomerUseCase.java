@@ -5,5 +5,5 @@ import com.stockapp.stocktakingmanagementservice.core.dtos.response.CustomerDtoR
 import reactor.core.publisher.Mono;
 
 public interface CreateCustomerUseCase {
-    Mono<CustomerDtoRes> createCustomer(CustomerDtoReq customer);
+    Mono<CustomerDtoRes> create(CustomerDtoReq customer);
 }

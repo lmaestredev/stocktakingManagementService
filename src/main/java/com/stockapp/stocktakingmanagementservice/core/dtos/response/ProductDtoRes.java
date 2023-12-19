@@ -1,26 +1,20 @@
-package com.stockapp.stocktakingmanagementservice.core.models;
-
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.Document;
+package com.stockapp.stocktakingmanagementservice.core.dtos.response;
 
 import java.math.BigDecimal;
 
-@Document("Products")
-public class Product {
+public class ProductDtoRes {
 
-    @Id
     private String id;
-    @Indexed(unique = true)
     private String name;
     private Number stockQuantity;
     private BigDecimal cost;
     private Integer code;
 
-    public Product() {
+    public ProductDtoRes() {
     }
 
-    public Product(String name, Number stockQuantity, BigDecimal cost, Integer code) {
+    public ProductDtoRes(String id, String name, Number stockQuantity, BigDecimal cost, Integer code) {
+        this.id = id;
         this.name = name;
         this.stockQuantity = stockQuantity;
         this.cost = cost;
@@ -31,32 +25,36 @@ public class Product {
         return id;
     }
 
+    public void setId(String id) {
+        this.id = id;
+    }
+
     public String getName() {
         return name;
-    }
-
-    public Number getStockQuantity() {
-        return stockQuantity;
-    }
-
-    public BigDecimal getCost() {
-        return cost;
-    }
-
-    public Integer getCode() {
-        return code;
     }
 
     public void setName(String name) {
         this.name = name;
     }
 
+    public Number getStockQuantity() {
+        return stockQuantity;
+    }
+
     public void setStockQuantity(Number stockQuantity) {
         this.stockQuantity = stockQuantity;
     }
 
+    public BigDecimal getCost() {
+        return cost;
+    }
+
     public void setCost(BigDecimal cost) {
         this.cost = cost;
+    }
+
+    public Integer getCode() {
+        return code;
     }
 
     public void setCode(Integer code) {

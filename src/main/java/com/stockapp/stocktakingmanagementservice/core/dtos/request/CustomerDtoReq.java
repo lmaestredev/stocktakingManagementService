@@ -1,16 +1,16 @@
-package com.stockapp.stocktakingmanagementservice.core.dtos;
+package com.stockapp.stocktakingmanagementservice.core.dtos.request;
 
 import lombok.Data;
 
 @Data
-public class CustomerDto {
+public class CustomerDtoReq {
 
     private String name;
 
-    public CustomerDto() {
+    public CustomerDtoReq() {
     }
 
-    public CustomerDto(String name) {
+    public CustomerDtoReq(String name) {
         this.name = name;
     }
 

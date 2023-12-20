@@ -4,7 +4,7 @@ import com.stockapp.stocktakingmanagementservice.core.dtos.SaleProductDto;
 import com.stockapp.stocktakingmanagementservice.core.dtos.request.SaleDtoReq;
 import com.stockapp.stocktakingmanagementservice.core.dtos.response.SaleDtoRes;
 import com.stockapp.stocktakingmanagementservice.core.models.Sale;
-import com.stockapp.stocktakingmanagementservice.core.port.SaleRepository;
+import com.stockapp.stocktakingmanagementservice.core.port.repositories.SaleRepository;
 import com.stockapp.stocktakingmanagementservice.core.usecase.customer.GetCustomerByNameUseCase;
 import com.stockapp.stocktakingmanagementservice.core.usecase.product.GetProductByNameUseCase;
 import com.stockapp.stocktakingmanagementservice.core.usecase.product.VerifyProductsByNameUseCase;

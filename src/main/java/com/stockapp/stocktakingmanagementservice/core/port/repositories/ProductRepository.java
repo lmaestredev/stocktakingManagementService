@@ -1,4 +1,4 @@
-package com.stockapp.stocktakingmanagementservice.core.port;
+package com.stockapp.stocktakingmanagementservice.core.port.repositories;
 
 import com.stockapp.stocktakingmanagementservice.core.models.Product;
 import org.springframework.data.domain.Pageable;

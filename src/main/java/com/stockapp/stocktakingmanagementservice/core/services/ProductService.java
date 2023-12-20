@@ -4,7 +4,7 @@ import com.stockapp.stocktakingmanagementservice.core.dtos.SaleProductDto;
 import com.stockapp.stocktakingmanagementservice.core.dtos.request.ProductDtoReq;
 import com.stockapp.stocktakingmanagementservice.core.dtos.response.ProductDtoRes;
 import com.stockapp.stocktakingmanagementservice.core.models.Product;
-import com.stockapp.stocktakingmanagementservice.core.port.ProductRepository;
+import com.stockapp.stocktakingmanagementservice.core.port.repositories.ProductRepository;
 import com.stockapp.stocktakingmanagementservice.core.usecase.product.*;
 import com.stockapp.stocktakingmanagementservice.utils.mappers.ProductMapper;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -44,7 +44,7 @@ public class RabbitMqPublisher {
                         CUSTOMER_ROUTING_KEY, gson.toJson(object).getBytes()))).subscribe();
     }
 
-    public void publishTransaction(Object object) {
+    public void publishSale(Object object) {
         sender
                 .send(Mono.just(new OutboundMessage(EXCHANGE_NAME,
                         SALE_ROUTING_KEY, gson.toJson(object).getBytes()))).subscribe();

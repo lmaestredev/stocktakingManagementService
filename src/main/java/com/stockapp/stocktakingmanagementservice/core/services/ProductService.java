@@ -1,5 +1,6 @@
 package com.stockapp.stocktakingmanagementservice.core.services;
 
+import com.stockapp.stocktakingmanagementservice.core.dtos.SaleProductDto;
 import com.stockapp.stocktakingmanagementservice.core.dtos.request.ProductDtoReq;
 import com.stockapp.stocktakingmanagementservice.core.dtos.response.ProductDtoRes;
 import com.stockapp.stocktakingmanagementservice.core.models.Product;
@@ -22,7 +23,9 @@ public class ProductService implements
         GetAllProductsUseCase,
         GetProductByIdUseCase,
         GetPaginatedProductsUseCase,
-        CreateProductsByLotsUseCase {
+        CreateProductsByLotsUseCase,
+        GetProductByNameUseCase,
+        VerifyProductsByNameUseCase {
 
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
@@ -106,5 +109,26 @@ public class ProductService implements
                         .filter(dtoRes -> dtoRes != null && dtoRes.getId() != null) // Filtrar solo los productos creados correctamente
                         .collect(Collectors.toList())
                 );
+    }
+
+    @Override
+    public Mono<ProductDtoRes> getByName(String name) {
+        return productRepository.existsByName(name).flatMap(exists -> {
+            if (exists) {
+                return productRepository.findByName(name).map(productMapper::entityToDtoRes);
+            } else {
+                return Mono.error(new RuntimeException("Producto " + name + " no existe"));
+            }
+        });
+    }
+
+    @Override
+    public Flux<SaleProductDto> validateProducts(List<SaleProductDto> products) {
+        return Flux.fromIterable(products)
+                .flatMap(productObj -> {
+                    return productRepository.findByName(productObj.getName()).map(product -> productObj);
+                })
+                .switchIfEmpty(Mono.error(new RuntimeException("Product not found or insufficient quantity")));
+
     }
 }

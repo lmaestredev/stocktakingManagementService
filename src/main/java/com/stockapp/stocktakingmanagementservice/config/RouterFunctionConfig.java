@@ -2,6 +2,7 @@ package com.stockapp.stocktakingmanagementservice.config;
 
 import com.stockapp.stocktakingmanagementservice.handlers.CustomerHandler;
 import com.stockapp.stocktakingmanagementservice.handlers.ProductHandler;
+import com.stockapp.stocktakingmanagementservice.handlers.SaleHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.server.*;
@@ -28,6 +29,15 @@ public class RouterFunctionConfig {
                 .andRoute(GET("/products/getById/{productId}"), productHandler::getById)
                 .andRoute(GET("/products/getPaginated"), productHandler::getPaginated)
                 .andRoute(POST("/products/createLots"), productHandler::createLots);
+
+    }
+
+    @Bean
+    public RouterFunction<ServerResponse> saleRoutes(SaleHandler saleHandler) {
+        return RouterFunctions
+                .route(POST("/sales/create"), saleHandler::create)
+                .andRoute(GET("/sales/getAll"), saleHandler::getAll);
+
 
     }
 

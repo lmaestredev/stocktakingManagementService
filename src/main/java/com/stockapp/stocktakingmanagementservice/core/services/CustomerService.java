@@ -7,6 +7,7 @@ import com.stockapp.stocktakingmanagementservice.core.port.CustomerRepository;
 import com.stockapp.stocktakingmanagementservice.core.usecase.customer.CreateCustomerUseCase;
 import com.stockapp.stocktakingmanagementservice.core.usecase.customer.GetAllCustomersUseCase;
 import com.stockapp.stocktakingmanagementservice.core.usecase.customer.GetCustomerByIdUseCase;
+import com.stockapp.stocktakingmanagementservice.core.usecase.customer.GetCustomerByNameUseCase;
 import com.stockapp.stocktakingmanagementservice.utils.mappers.CustomerMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,7 +15,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Service
-public class CustomerService implements CreateCustomerUseCase, GetAllCustomersUseCase, GetCustomerByIdUseCase {
+public class CustomerService implements CreateCustomerUseCase, GetAllCustomersUseCase, GetCustomerByIdUseCase, GetCustomerByNameUseCase {
 
     private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
@@ -65,4 +66,14 @@ public class CustomerService implements CreateCustomerUseCase, GetAllCustomersUs
                 .switchIfEmpty(Mono.error(new RuntimeException("El cliente no existe")));
     }
 
+    @Override
+    public Mono<CustomerDtoRes> getByName(String name) {
+        return customerRepository.existsByName(name).flatMap(exists -> {
+            if (exists) {
+                return customerRepository.findByName(name).map(customerMapper::entityToDtoRes);
+            } else {
+                return Mono.error(new RuntimeException("CLiente no existe"));
+            }
+        });
+    }
 }

@@ -1,4 +1,4 @@
-package com.stockapp.stocktakingmanagementservice.core.port;
+package com.stockapp.stocktakingmanagementservice.core.port.repositories;
 
 import com.stockapp.stocktakingmanagementservice.core.models.Customer;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;

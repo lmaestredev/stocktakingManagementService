@@ -1,7 +1,8 @@
 package com.stockapp.stocktakingmanagementservice.handlers;
 
+import com.stockapp.stocktakingmanagementservice.core.dtos.RabbitPublisherDto;
 import com.stockapp.stocktakingmanagementservice.core.dtos.request.CustomerDtoReq;
-import com.stockapp.stocktakingmanagementservice.core.dtos.response.CustomerDtoRes;
+import com.stockapp.stocktakingmanagementservice.core.port.bus.RabbitMqPublisher;
 import com.stockapp.stocktakingmanagementservice.core.usecase.customer.CreateCustomerUseCase;
 import com.stockapp.stocktakingmanagementservice.core.usecase.customer.GetAllCustomersUseCase;
 import com.stockapp.stocktakingmanagementservice.core.usecase.customer.GetCustomerByIdUseCase;
@@ -10,7 +11,6 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Component
@@ -20,28 +20,42 @@ public class CustomerHandler {
     private final GetAllCustomersUseCase getAllCustomersUseCase;
     private final GetCustomerByIdUseCase getCustomerByIdUseCase;
     private final ErrorHandler errorHandler;
+    private final RabbitMqPublisher rabbitMqPublisher;
 
     @Autowired
-    public CustomerHandler(CreateCustomerUseCase createCustomerUseCase, GetAllCustomersUseCase getAllCustomersUseCase, GetCustomerByIdUseCase getCustomerByIdUseCase, ErrorHandler errorHandler) {
+    public CustomerHandler(CreateCustomerUseCase createCustomerUseCase, GetAllCustomersUseCase getAllCustomersUseCase, GetCustomerByIdUseCase getCustomerByIdUseCase, ErrorHandler errorHandler, RabbitMqPublisher rabbitMqPublisher) {
         this.createCustomerUseCase = createCustomerUseCase;
         this.getAllCustomersUseCase = getAllCustomersUseCase;
         this.getCustomerByIdUseCase = getCustomerByIdUseCase;
         this.errorHandler = errorHandler;
+        this.rabbitMqPublisher = rabbitMqPublisher;
     }
 
     public Mono<ServerResponse> create(ServerRequest request) {
-        Mono<CustomerDtoReq> customerDtoMono = request.bodyToMono(CustomerDtoReq.class);
-        return customerDtoMono.flatMap(customerDto -> {
-            return createCustomerUseCase.create(customerDto).flatMap(created -> {
-                return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).bodyValue(created);
-            });
+        return request.bodyToMono(CustomerDtoReq.class).flatMap(customerDto -> {
+            return createCustomerUseCase.create(customerDto)
+                    .flatMap(created -> {
+                        rabbitMqPublisher.publishCustomer(new RabbitPublisherDto("createCustomerUseCase", created));
+                        return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).bodyValue(created);
+                    })
+                    .onErrorResume(error -> {
+                        rabbitMqPublisher.publishErrorMessage(new RabbitPublisherDto("createCustomerUseCase", customerDto, error.getMessage()));
+                        return errorHandler.handleServiceError(error, customerDto);
+                    });
         });
     }
 
     public Mono<ServerResponse> getAll(ServerRequest serverRequest) {
-        Flux<CustomerDtoRes> customers = getAllCustomersUseCase.getAll();
-        return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(customers, CustomerDtoRes.class);
-
+        return getAllCustomersUseCase.getAll()
+                .collectList()
+                .flatMap(customers -> {
+                    rabbitMqPublisher.publishCustomer(new RabbitPublisherDto("getAllCustomersUseCase", customers));
+                    return ServerResponse.ok().bodyValue(customers);
+                })
+                .onErrorResume(error -> {
+                    rabbitMqPublisher.publishErrorMessage(new RabbitPublisherDto("getAllCustomersUseCase", "", error.getMessage()));
+                    return errorHandler.handleServiceError(error, "");
+                });
     }
 
     public Mono<ServerResponse> getById(ServerRequest request) {
@@ -50,9 +64,13 @@ public class CustomerHandler {
         return customerIdMono.flatMap(customerId -> {
             return getCustomerByIdUseCase.getById(customerId)
                     .flatMap(customer -> {
+                        rabbitMqPublisher.publishCustomer(new RabbitPublisherDto("getCustomerByIdUseCase", customer));
                         return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).bodyValue(customer);
                     })
-                    .onErrorResume(error -> errorHandler.handleServiceError(error, customerId));
+                    .onErrorResume(error -> {
+                        rabbitMqPublisher.publishErrorMessage(new RabbitPublisherDto("getCustomerByIdUseCase", customerId, error.getMessage()));
+                        return errorHandler.handleServiceError(error, customerId);
+                    });
         });
     }
 

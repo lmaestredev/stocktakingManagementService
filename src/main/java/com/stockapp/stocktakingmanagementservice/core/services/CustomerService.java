@@ -3,7 +3,7 @@ package com.stockapp.stocktakingmanagementservice.core.services;
 import com.stockapp.stocktakingmanagementservice.core.dtos.request.CustomerDtoReq;
 import com.stockapp.stocktakingmanagementservice.core.dtos.response.CustomerDtoRes;
 import com.stockapp.stocktakingmanagementservice.core.models.Customer;
-import com.stockapp.stocktakingmanagementservice.core.port.CustomerRepository;
+import com.stockapp.stocktakingmanagementservice.core.port.repositories.CustomerRepository;
 import com.stockapp.stocktakingmanagementservice.core.usecase.customer.CreateCustomerUseCase;
 import com.stockapp.stocktakingmanagementservice.core.usecase.customer.GetAllCustomersUseCase;
 import com.stockapp.stocktakingmanagementservice.core.usecase.customer.GetCustomerByIdUseCase;

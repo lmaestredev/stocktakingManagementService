@@ -26,6 +26,12 @@ public class RabbitMqPublisher {
     @Value("${errorRoutingKey}")
     private String ERROR_ROUTING_KEY;
 
+    @Value("${retailRoutingKey}")
+    private String RETAIL_ROUTING_KEY;
+
+    @Value("${whosaleRoutingKey}")
+    private String WHOSALE_ROUTING_KEY;
+
     @Autowired
     private Sender sender;
 
@@ -41,18 +47,31 @@ public class RabbitMqPublisher {
     public void publishProduct(Object object) {
         sender
                 .send(Mono.just(new OutboundMessage(EXCHANGE_NAME,
-                        CUSTOMER_ROUTING_KEY, gson.toJson(object).getBytes()))).subscribe();
+                        PRODUCT_ROUTING_KEY, gson.toJson(object).getBytes()))).subscribe();
     }
 
     public void publishSale(Object object) {
         sender
                 .send(Mono.just(new OutboundMessage(EXCHANGE_NAME,
                         SALE_ROUTING_KEY, gson.toJson(object).getBytes()))).subscribe();
+        ;
     }
 
     public void publishErrorMessage(Object object) {
         sender
                 .send(Mono.just(new OutboundMessage(EXCHANGE_NAME,
                         ERROR_ROUTING_KEY, gson.toJson(object).getBytes()))).subscribe();
+    }
+
+    public void publishRetail(Object object) {
+        sender
+                .send(Mono.just(new OutboundMessage(EXCHANGE_NAME,
+                        RETAIL_ROUTING_KEY, gson.toJson(object).getBytes()))).subscribe();
+    }
+
+    public void publishWhosale(Object object) {
+        sender
+                .send(Mono.just(new OutboundMessage(EXCHANGE_NAME,
+                        WHOSALE_ROUTING_KEY, gson.toJson(object).getBytes()))).subscribe();
     }
 }

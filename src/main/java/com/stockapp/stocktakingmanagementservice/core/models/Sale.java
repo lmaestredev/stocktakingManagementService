@@ -19,13 +19,14 @@ public class Sale {
     private SaleType saleType;
 
     private Sale(Builder builder) {
-       this.customer = builder.customer;
-       this.products = builder.products;
-       this.amount = builder.amount;
-       this.saleType = builder.saleType;
+        this.customer = builder.customer;
+        this.products = builder.products;
+        this.amount = builder.amount;
+        this.saleType = builder.saleType;
     }
 
-    public Sale() {}
+    public Sale() {
+    }
 
     //getters
     public String getId() {
@@ -70,32 +71,32 @@ public class Sale {
     }
 
 
-    public static class Builder{
+    public static class Builder {
         private Object customer;
         private List<Object> products;
         private BigDecimal amount;
         private SaleType saleType;
 
-        public Builder(){
+        public Builder() {
         }
 
-        public Builder setCustomer(Object customer){
+        public Builder setCustomer(Object customer) {
             this.customer = customer;
             return this;
         }
 
 
-        public Builder setProducts(List<Object> products){
+        public Builder setProducts(List<Object> products) {
             this.products = products;
             return this;
         }
 
-        public Builder setAmount(BigDecimal amount){
+        public Builder setAmount(BigDecimal amount) {
             this.amount = amount;
             return this;
         }
 
-        public Builder setSaleType(SaleType saleType){
+        public Builder setSaleType(SaleType saleType) {
             this.saleType = saleType;
             return this;
         }
@@ -103,5 +104,17 @@ public class Sale {
         public Sale build() {
             return new Sale(this);
         }
+    }
+
+
+    @Override
+    public String toString() {
+        return "Sale{" +
+                "id='" + id + '\'' +
+                ", customer=" + customer +
+                ", products=" + products +
+                ", amount=" + amount +
+                ", saleType=" + saleType +
+                '}';
     }
 }

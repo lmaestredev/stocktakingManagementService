@@ -42,6 +42,12 @@ public class RabbitConfig {
     @Value("${errorRoutingKey}")
     private String ERROR_ROUTING_KEY;
 
+    @Value("${retailRoutingKey}")
+    private String RETAIL_ROUTING_KEY;
+
+    @Value("${whosaleRoutingKey}")
+    private String WHOSALE_ROUTING_KEY;
+
     //queues
     @Value("${customerQueue}")
     private String CUSTOMER_QUEUE;
@@ -55,6 +61,12 @@ public class RabbitConfig {
     @Value("${errorQueue}")
     private String ERROR_QUEUE;
 
+    @Value("${retailQueue}")
+    private String RETAIL_QUEUE;
+
+    @Value("${whosaleQueue}")
+    private String WHOSALE_QUEUE;
+
     @Bean
     public AmqpAdmin amqpAdmin() {
         CachingConnectionFactory connectionFactory = new CachingConnectionFactory(URI.create(URI_NAME));
@@ -63,19 +75,26 @@ public class RabbitConfig {
         var exchange = new TopicExchange(EXCHANGE_NAME);
         var clientQueue = new Queue(CUSTOMER_QUEUE, true, false, false);
         var accountQueue = new Queue(PRODUCT_QUEUE, true, false, false);
-        var transactionQueue = new Queue(SALE_QUEUE, true, false, false);
+        var saleQueue = new Queue(SALE_QUEUE, true, false, false);
         var errorQueue = new Queue(ERROR_QUEUE, true, false, false);
+        var retailQueue = new Queue(RETAIL_QUEUE, true, false, false);
+        var whosaleQueue = new Queue(WHOSALE_QUEUE, true, false, false);
 
         amqpAdmin.declareExchange(exchange);
         amqpAdmin.declareQueue(clientQueue);
         amqpAdmin.declareQueue(accountQueue);
-        amqpAdmin.declareQueue(transactionQueue);
+        amqpAdmin.declareQueue(saleQueue);
         amqpAdmin.declareQueue(errorQueue);
+        amqpAdmin.declareQueue(retailQueue);
+        amqpAdmin.declareQueue(whosaleQueue);
+
 
         amqpAdmin.declareBinding(BindingBuilder.bind(clientQueue).to(exchange).with(CUSTOMER_ROUTING_KEY));
         amqpAdmin.declareBinding(BindingBuilder.bind(accountQueue).to(exchange).with(PRODUCT_ROUTING_KEY));
-        amqpAdmin.declareBinding(BindingBuilder.bind(transactionQueue).to(exchange).with(SALE_ROUTING_KEY));
+        amqpAdmin.declareBinding(BindingBuilder.bind(saleQueue).to(exchange).with(SALE_ROUTING_KEY));
         amqpAdmin.declareBinding(BindingBuilder.bind(errorQueue).to(exchange).with(ERROR_ROUTING_KEY));
+        amqpAdmin.declareBinding(BindingBuilder.bind(retailQueue).to(exchange).with(RETAIL_ROUTING_KEY));
+        amqpAdmin.declareBinding(BindingBuilder.bind(whosaleQueue).to(exchange).with(WHOSALE_ROUTING_KEY));
 
         return amqpAdmin;
     }

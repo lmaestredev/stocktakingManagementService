@@ -32,6 +32,7 @@ public class CustomerHandler {
     }
 
     public Mono<ServerResponse> create(ServerRequest request) {
+        Mono<CustomerDtoReq> customerDtoReqMono = request.bodyToMono(CustomerDtoReq.class);
         return request.bodyToMono(CustomerDtoReq.class).flatMap(customerDto -> {
             return createCustomerUseCase.create(customerDto)
                     .flatMap(created -> {
@@ -39,7 +40,8 @@ public class CustomerHandler {
                         return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).bodyValue(created);
                     })
                     .onErrorResume(error -> {
-                        rabbitMqPublisher.publishErrorMessage(new RabbitPublisherDto("createCustomerUseCase", customerDto, error.getMessage()));
+                        Object customerData = customerDto.toString();
+                        rabbitMqPublisher.publishErrorMessage(new RabbitPublisherDto("createCustomerUseCase", customerData, error.getMessage()));
                         return errorHandler.handleServiceError(error, customerDto);
                     });
         });

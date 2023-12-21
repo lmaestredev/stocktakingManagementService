@@ -33,6 +33,7 @@ public class SaleHandler {
         return request.bodyToMono(SaleDtoReq.class).flatMap(saleDto -> {
             return createSaleUseCase.create(saleDto)
                     .flatMap(created -> {
+                        System.out.println(saleDto.toString());
                         rabbitMqPublisher.publishSale(new RabbitPublisherDto("createSaleUseCase", created));
                         return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).bodyValue(created);
                     })

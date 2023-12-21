@@ -1,0 +1,26 @@
+version: "3.9"
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+  stocktaking:
+    image: lmaestredev/stocktaking:latest
+    container_name: stocktaking
+    env_file:
+      - app.env
+    ports:
+      - "8086:8086"
+    links:
+      - rabbitmq
+  trackinginventory:
+    env_file:
+      - app.env
+    image: lmaestredev/trackinginventory:latest
+    container_name: trackinginventory
+    ports:
+      - "8087:8087"
+    links:
+      - rabbitmq

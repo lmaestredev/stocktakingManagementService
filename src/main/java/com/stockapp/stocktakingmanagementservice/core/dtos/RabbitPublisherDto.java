@@ -3,7 +3,6 @@ package com.stockapp.stocktakingmanagementservice.core.dtos;
 public class RabbitPublisherDto {
     private String casoDeUso;
     private Object data;
-
     private String error;
 
     public RabbitPublisherDto() {

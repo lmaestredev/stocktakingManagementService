@@ -4,6 +4,7 @@ import com.stockapp.stocktakingmanagementservice.core.dtos.SaleProductDto;
 import com.stockapp.stocktakingmanagementservice.core.dtos.request.SaleDtoReq;
 import com.stockapp.stocktakingmanagementservice.core.dtos.response.SaleDtoRes;
 import com.stockapp.stocktakingmanagementservice.core.models.Sale;
+import com.stockapp.stocktakingmanagementservice.core.port.bus.RabbitMqPublisher;
 import com.stockapp.stocktakingmanagementservice.core.port.repositories.SaleRepository;
 import com.stockapp.stocktakingmanagementservice.core.usecase.customer.GetCustomerByNameUseCase;
 import com.stockapp.stocktakingmanagementservice.core.usecase.product.GetProductByNameUseCase;
@@ -29,14 +30,17 @@ public class SaleService implements CreateSaleUseCase, GetAllSalesUseCase {
     private final VerifyProductsByNameUseCase verifyProductsByNameUseCase;
     private final SaleRepository saleRepository;
     private final SaleMapper saleMapper;
+    private final RabbitMqPublisher rabbitMqPublisher;
+
 
     @Autowired
-    public SaleService(GetCustomerByNameUseCase getCustomerByNameUseCase, GetProductByNameUseCase getProductByNameUseCase, VerifyProductsByNameUseCase verifyProductsByNameUseCase, SaleRepository saleRepository, SaleMapper saleMapper) {
+    public SaleService(GetCustomerByNameUseCase getCustomerByNameUseCase, GetProductByNameUseCase getProductByNameUseCase, VerifyProductsByNameUseCase verifyProductsByNameUseCase, SaleRepository saleRepository, SaleMapper saleMapper, RabbitMqPublisher rabbitMqPublisher) {
         this.getCustomerByNameUseCase = getCustomerByNameUseCase;
         this.getProductByNameUseCase = getProductByNameUseCase;
         this.verifyProductsByNameUseCase = verifyProductsByNameUseCase;
         this.saleRepository = saleRepository;
         this.saleMapper = saleMapper;
+        this.rabbitMqPublisher = rabbitMqPublisher;
     }
 
     @Override
@@ -68,10 +72,12 @@ public class SaleService implements CreateSaleUseCase, GetAllSalesUseCase {
 
                             if (saleDtoReq.getSaleType().equals("RETAIL")) {
                                 sale.setSaleType(SaleType.RETAIL);
+                                rabbitMqPublisher.publishRetail(sale);
                             } else if (saleDtoReq.getSaleType().equals("WHOSALE")) {
                                 sale.setSaleType(SaleType.WHOSALE);
                                 BigDecimal discount = totalCost.multiply(BigDecimal.valueOf(0.2)); // 0.2 representa el 20%
                                 sale.setAmount(sale.getAmount().subtract(discount));
+                                rabbitMqPublisher.publishWhosale(sale);
                             } else {
                                 return Mono.error(new RuntimeException("El tipo de venta no es correcto."));
                             }

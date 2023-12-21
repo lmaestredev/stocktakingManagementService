@@ -15,7 +15,11 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Service
-public class CustomerService implements CreateCustomerUseCase, GetAllCustomersUseCase, GetCustomerByIdUseCase, GetCustomerByNameUseCase {
+public class CustomerService implements
+        CreateCustomerUseCase,
+        GetAllCustomersUseCase,
+        GetCustomerByIdUseCase,
+        GetCustomerByNameUseCase {
 
     private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
